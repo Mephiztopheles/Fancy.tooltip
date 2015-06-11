@@ -15,7 +15,7 @@
         };
 
     function truncated( obj ) {
-        return obj.scrollWidth > obj.clientWidth;
+        return obj[0].scrollWidth > obj[0].clientWidth;
     };
 
     function sp( el ) {
@@ -122,6 +122,7 @@
         SELF.element.hover( function ( e ) {
             clearTimeout( SELF.timer );
             setTimeout( function () {
+                console.log( truncated( SELF.element ) )
                 if ( SELF.settings.query( SELF.element, SELF.settings.ever, truncated( SELF.element ) ) && !SELF.settings.disabled ) {
                     if ( !SELF.settings.disabled )
                         SELF.show();
