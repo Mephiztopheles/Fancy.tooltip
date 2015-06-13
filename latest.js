@@ -2,12 +2,12 @@
 
     Fancy.require( {
         jQuery: false,
-        Fancy : "1.0.0"
+        Fancy : "1.0.1"
     } );
 
     var i       = 1,
         NAME    = "FancyTooltip",
-        VERSION = "1.0.0",
+        VERSION = "1.0.1",
         logged  = false,
         mouse   = {
             x: 0,
@@ -16,23 +16,7 @@
 
     function truncated( obj ) {
         return obj[0].scrollWidth > obj[0].clientWidth;
-    };
-
-    function sp( el ) {
-        var position            = el.css( "position" ),
-            excludeStaticParent = position === "absolute",
-            scrollParent        = el.prop( 'nodeName' ) == "TEXTAREA" && el [ 0 ].scrollHeight - el.outerHeight() > 0 ? el : false;
-        if ( !el )
-            scrollParent = el.parents().filter( function () {
-                var parent = $( this );
-                if ( excludeStaticParent && parent.css( "position" ) === "static" ) {
-                    return false;
-                }
-                return ( /(auto|scroll)/ ).test( parent.css( "overflow" ) + parent.css( "overflow-y" ) + parent.css( "overflow-x" ) ) && parent [ 0 ].scrollHeight - parent.outerHeight() > 0;
-            } ).eq( 0 );
-        return position === "fixed" || !scrollParent.length ? $( el [ 0 ].ownerDocument.body || document.body ) : scrollParent;
     }
-
 
     window.MutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver;
     function FancyTooltip( element, settings ) {
@@ -74,8 +58,8 @@
             SELF.html.tooltip.css( 'zIndex', SELF.settings.zIndex );
 
         SELF.getOffset = function () {
-            var left = mouse.x - SELF.settings.left + sp( SELF.element ) [ 0 ].scrollLeft,
-                top  = mouse.y + SELF.settings.top + sp( SELF.element ) [ 0 ].scrollTop,
+            var left = mouse.x - SELF.settings.left + Fancy.scrollParent( SELF.element ) [ 0 ].scrollLeft,
+                top  = mouse.y + SELF.settings.top + Fancy.scrollParent( SELF.element ) [ 0 ].scrollTop,
                 css  = {};
 
             SELF.html.tooltip.css( {
@@ -122,12 +106,11 @@
         SELF.element.hover( function ( e ) {
             clearTimeout( SELF.timer );
             setTimeout( function () {
-                console.log( truncated( SELF.element ) )
                 if ( SELF.settings.query( SELF.element, SELF.settings.ever, truncated( SELF.element ) ) && !SELF.settings.disabled ) {
                     if ( !SELF.settings.disabled )
                         SELF.show();
                     if ( SELF.settings.move ) {
-                        $( document ).on( 'mousemove.' + NAME + "-" + SELF.id, function ( e ) {
+                        $( document ).on( 'mousemove.' + NAME + "-" + SELF.id, function () {
                             if ( !SELF.html.tooltip.hasClass( 'in' ) )
                                 SELF.html.tooltip.addClass( 'in' );
                             SELF.html.tooltip.css( SELF.getOffset() );
