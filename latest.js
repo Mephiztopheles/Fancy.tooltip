@@ -1,25 +1,25 @@
 (function ( $ ) {
 
-    Fancy.require ( {
+    Fancy.require( {
         jQuery: false,
         Fancy : "1.0.1"
     } );
 
     var i       = 1,
         NAME    = "FancyTooltip",
-        VERSION = "1.0.1",
+        VERSION = "1.0.2",
         logged  = false,
         mouse   = {
             x: 0,
             y: 0
         };
 
-    function truncated ( obj ) {
+    function truncated( obj ) {
         return obj[ 0 ].scrollWidth > obj[ 0 ].clientWidth;
     }
 
     window.MutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver;
-    function FancyTooltip ( element, settings ) {
+    function FancyTooltip( element, settings ) {
         var SELF     = this;
         SELF.id      = i;
         SELF.name    = NAME;
@@ -28,49 +28,49 @@
         SELF.timer   = 0;
         i++;
 
-        SELF.settings = $.extend ( {}, Fancy.settings [ NAME ], settings );
+        SELF.settings = $.extend( {}, Fancy.settings [ NAME ], settings );
         SELF.html     = {
-            tooltip: $ ( '<div/>', {
+            tooltip: $( '<div/>', {
                 id   : NAME,
                 class: SELF.settings.animation
             } ),
-            inner  : $ ( '<div/>', {
+            inner  : $( '<div/>', {
                 id: NAME + '-inner'
             } ),
-            arrow  : $ ( '<div/>', {
+            arrow  : $( '<div/>', {
                 id: NAME + '-arrow'
             } )
         };
-        SELF.html.tooltip.append ( SELF.html.arrow );
-        SELF.html.tooltip.append ( SELF.html.inner );
+        SELF.html.tooltip.append( SELF.html.arrow );
+        SELF.html.tooltip.append( SELF.html.inner );
 
         if ( !logged ) {
             logged = true;
-            Fancy.version ( SELF );
-            $ ( document ).on ( 'mousemove.' + NAME, function ( e ) {
+            Fancy.version( SELF );
+            $( document ).on( 'mousemove.' + NAME, function ( e ) {
                 mouse.x = e.clientX || e.pageX;
                 mouse.y = e.clientY || e.pageY;
             } );
         }
 
-        SELF.hide ();
+        SELF.hide();
         if ( SELF.settings.zIndex >= 0 )
-            SELF.html.tooltip.css ( 'zIndex', SELF.settings.zIndex );
+            SELF.html.tooltip.css( 'zIndex', SELF.settings.zIndex );
 
         SELF.getOffset = function () {
-            var left = mouse.x - SELF.settings.left + Fancy.scrollParent ( SELF.element ) [ 0 ].scrollLeft,
-                top  = mouse.y + SELF.settings.top + Fancy.scrollParent ( SELF.element ) [ 0 ].scrollTop,
+            var left = mouse.x - SELF.settings.left + (Fancy.scrollParent( SELF.element ) [ 0 ].scrollLeft || 0),
+                top  = mouse.y + SELF.settings.top + (Fancy.scrollParent( SELF.element ) [ 0 ].scrollTop || 0),
                 css  = {};
 
-            SELF.html.tooltip.css ( {
+            SELF.html.tooltip.css( {
                 whiteSpace: 'nowrap'
             } );
-            SELF.html.tooltip.removeClass ( "left" );
-            if ( left + SELF.html.tooltip.width () + 60 >= window.innerWidth ) {
-                SELF.html.tooltip.addClass ( "left" );
-                left -= SELF.html.tooltip.outerWidth () + SELF.settings.left * 2;
+            SELF.html.tooltip.removeClass( "left" );
+            if ( left + SELF.html.tooltip.width() + 60 >= window.innerWidth ) {
+                SELF.html.tooltip.addClass( "left" );
+                left -= SELF.html.tooltip.outerWidth() + SELF.settings.left * 2;
             }
-            SELF.html.tooltip.css ( {
+            SELF.html.tooltip.css( {
                 whiteSpace: ''
             } );
             css.top  = top;
@@ -79,52 +79,52 @@
             return css;
         };
 
-        SELF.element.addClass ( SELF.name + "-element" );
-        SELF.element.data ( SELF.name, SELF );
-        if ( !SELF.element.data ( 'title' ) )
-            SELF.element.data ( 'title', SELF.element.attr ( 'title' ) );
-        SELF.element.removeAttr ( 'title' );
+        SELF.element.addClass( SELF.name + "-element" );
+        SELF.element.data( SELF.name, SELF );
+        if ( !SELF.element.data( 'title' ) )
+            SELF.element.data( 'title', SELF.element.attr( 'title' ) );
+        SELF.element.removeAttr( 'title' );
 
-        if ( SELF.settings.cursor && SELF.element.css ( 'cursor' ) == 'auto' )
-            SELF.element.css ( 'cursor', SELF.settings.cursor );
+        if ( SELF.settings.cursor && SELF.element.css( 'cursor' ) == 'auto' )
+            SELF.element.css( 'cursor', SELF.settings.cursor );
 
-        var observer = new MutationObserver ( function ( mutation ) {
+        var observer = new MutationObserver( function ( mutation ) {
             var mut = mutation [ 0 ];
-            if ( mut.type = "attributes" && mut.attributeName == "title" && SELF.element.attr ( 'title' ) ) {
-                SELF.element.data ( 'title', SELF.element.attr ( 'title' ) );
-                SELF.element.removeAttr ( 'title' );
+            if ( mut.type = "attributes" && mut.attributeName == "title" && SELF.element.attr( 'title' ) ) {
+                SELF.element.data( 'title', SELF.element.attr( 'title' ) );
+                SELF.element.removeAttr( 'title' );
             }
         } );
-        observer.observe ( SELF.element [ 0 ], {
+        observer.observe( SELF.element [ 0 ], {
             attributes: true
         } );
 
-        SELF.element [ 0 ].addEventListener ( "DOMNodeRemovedFromDocument", function () {
-            SELF.hide ();
+        SELF.element [ 0 ].addEventListener( "DOMNodeRemovedFromDocument", function () {
+            SELF.hide();
         }, false );
 
-        SELF.element.hover ( function ( e ) {
-            clearTimeout ( SELF.timer );
-            setTimeout ( function () {
-                if ( SELF.settings.query ( SELF.element, SELF.settings.ever, truncated ( SELF.element ) ) && !SELF.settings.disabled ) {
+        SELF.element.hover( function ( e ) {
+            clearTimeout( SELF.timer );
+            setTimeout( function () {
+                if ( SELF.settings.query( SELF.element, SELF.settings.ever, truncated( SELF.element ) ) && !SELF.settings.disabled ) {
                     if ( !SELF.settings.disabled )
-                        SELF.show ();
+                        SELF.show();
                     if ( SELF.settings.move ) {
-                        $ ( document ).on ( 'mousemove.' + NAME + "-" + SELF.id, function () {
-                            if ( !SELF.html.tooltip.hasClass ( 'in' ) )
-                                SELF.html.tooltip.addClass ( 'in' );
-                            SELF.html.tooltip.css ( SELF.getOffset () );
+                        $( document ).on( 'mousemove.' + NAME + "-" + SELF.id, function () {
+                            if ( !SELF.html.tooltip.hasClass( 'in' ) )
+                                SELF.html.tooltip.addClass( 'in' );
+                            SELF.html.tooltip.css( SELF.getOffset() );
                         } );
                     }
                 }
             }, SELF.settings.delay );
         }, function () {
-            SELF.timer = setTimeout ( function () {
-                SELF.hide ();
+            SELF.timer = setTimeout( function () {
+                SELF.hide();
                 if ( SELF.settings.move ) {
-                    $ ( document ).unbind ( "." + NAME + "-" + SELF.id );
+                    $( document ).unbind( "." + NAME + "-" + SELF.id );
                 }
-                SELF.element.removeClass ( NAME + "-hover" );
+                SELF.element.removeClass( NAME + "-hover" );
             }, 50 );
         } );
 
@@ -136,34 +136,34 @@
     FancyTooltip.api.version = VERSION;
     FancyTooltip.api.name    = NAME;
     FancyTooltip.api.disable = function () {
-        this.elements.removeClass ( NAME );
+        this.elements.removeClass( NAME );
         this.settings.disabled = true;
-        this.hide ();
+        this.hide();
         return this;
     };
 
     FancyTooltip.api.enable = function () {
         this.settings.disabled = false;
-        this.elements.addClass ( NAME );
+        this.elements.addClass( NAME );
         return this;
     };
 
     FancyTooltip.api.show = function () {
         var SELF = this;
-        $ ( "body" ).append ( SELF.html.tooltip );
+        $( "body" ).append( SELF.html.tooltip );
         if ( this.settings.animation ) {
-            clearTimeout ( this.timer );
-            SELF.html.tooltip.removeClass ( 'in out' ).addClass ( 'in' );
+            clearTimeout( this.timer );
+            SELF.html.tooltip.removeClass( 'in out' ).addClass( 'in' );
         } else {
-            SELF.html.tooltip.css ( 'opacity', 1 );
+            SELF.html.tooltip.css( 'opacity', 1 );
         }
 
-        SELF.element.addClass ( NAME + "-hover" );
-        SELF.html.inner.html ( SELF.element.data ( 'title' ) || SELF.element.html () );
-        SELF.html.tooltip.css ( {
+        SELF.element.addClass( NAME + "-hover" );
+        SELF.html.inner.html( SELF.element.data( 'title' ) || SELF.element.html() );
+        SELF.html.tooltip.css( {
             position: 'absolute',
-            top     : SELF.getOffset ().top,
-            left    : SELF.getOffset ().left,
+            top     : SELF.getOffset().top,
+            left    : SELF.getOffset().left,
             maxWidth: window.innerWidth / 3
         } );
         return this;
@@ -171,20 +171,20 @@
 
     FancyTooltip.api.destroy = function () {
         var SELF = this;
-        SELF.hide ();
-        SELF.element.removeClass ( NAME + '-hover' );
-        $ ( document ).unbind ( '.' + NAME + "-" + SELF.id );
+        SELF.hide();
+        SELF.element.removeClass( NAME + '-hover' );
+        $( document ).unbind( '.' + NAME + "-" + SELF.id );
     };
 
     FancyTooltip.api.hide = function () {
         var SELF = this;
         if ( SELF.settings.animation ) {
-            SELF.html.tooltip.addClass ( 'out' );
-            SELF.timer = setTimeout ( function () {
-                SELF.html.tooltip.remove ();
+            SELF.html.tooltip.addClass( 'out' );
+            SELF.timer = setTimeout( function () {
+                SELF.html.tooltip.remove();
             }, 200 );
         } else {
-            SELF.html.tooltip.remove ();
+            SELF.html.tooltip.remove();
         }
         return this;
     };
@@ -205,8 +205,8 @@
 
     Fancy.tooltip     = VERSION;
     Fancy.api.tooltip = function ( settings ) {
-        return this.set ( NAME, function ( el ) {
-            return new FancyTooltip ( el, settings );
+        return this.set( NAME, function ( el ) {
+            return new FancyTooltip( el, settings );
         } );
     };
-}) ( jQuery );
+})( jQuery );
