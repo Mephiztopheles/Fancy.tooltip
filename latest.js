@@ -25,7 +25,7 @@
         SELF.name    = NAME;
         SELF.version = VERSION;
         SELF.element = element;
-        SELF.timer   = 0;
+        SELF.timer   = {};
         i++;
 
         SELF.settings = $.extend( {}, Fancy.settings [ NAME ], settings );
@@ -104,8 +104,8 @@
         }, false );
 
         SELF.element.hover( function ( e ) {
-            clearTimeout( SELF.timer );
-            setTimeout( function () {
+            clearTimeout( SELF.timer[ "hide" ] );
+            SELF.timer[ "show" ] = setTimeout( function () {
                 if ( SELF.settings.query( SELF.element, SELF.settings.ever, truncated( SELF.element ) ) && !SELF.settings.disabled ) {
                     if ( !SELF.settings.disabled )
                         SELF.show();
@@ -119,7 +119,8 @@
                 }
             }, SELF.settings.delay );
         }, function () {
-            SELF.timer = setTimeout( function () {
+            SELF.timer[ "hide" ] = setTimeout( function () {
+                clearTimeout( SELF.timer[ "show" ] );
                 SELF.hide();
                 if ( SELF.settings.move ) {
                     $( document ).unbind( "." + NAME + "-" + SELF.id );
