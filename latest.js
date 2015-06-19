@@ -7,7 +7,7 @@
 
     var i       = 1,
         NAME    = "FancyTooltip",
-        VERSION = "1.0.2",
+        VERSION = "1.0.3",
         logged  = false,
         mouse   = {
             x: 0,
@@ -163,7 +163,7 @@
         SELF.element.addClass ( NAME + "-hover" );
         SELF.html.inner.html ( SELF.element.data ( 'title' ) || SELF.element.html () );
         SELF.html.tooltip.css ( {
-            position: 'absolute',
+            position: "fixed",
             top     : SELF.getOffset ().top,
             left    : SELF.getOffset ().left,
             maxWidth: window.innerWidth / 3
