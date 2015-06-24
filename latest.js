@@ -120,8 +120,8 @@
                 }
             }, SELF.settings.delay );
         }, function () {
+            clearTimeout ( SELF.timer[ "show" ] );
             SELF.timer[ "hide" ] = setTimeout ( function () {
-                clearTimeout ( SELF.timer[ "show" ] );
                 SELF.hide ();
                 if ( SELF.settings.move ) {
                     $ ( document ).unbind ( "." + NAME + "-" + SELF.id );
