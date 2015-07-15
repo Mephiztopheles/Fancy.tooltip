@@ -172,7 +172,7 @@
         }
 
         SELF.element.addClass( NAME + "-hover" );
-        SELF.html.inner.html( SELF.element.data( 'title' ) || SELF.element.html() );
+        SELF.html.inner.html( SELF.element.data( "title" ) || (SELF.element[ 0 ].nodeName === "INPUT" || SELF.element[ 0 ].nodeName === "TEXTAREA" ? SELF.element.val() : SELF.element.html()) );
         SELF.html.tooltip.css( {
             position: "fixed",
             top     : SELF.getOffset().top,
