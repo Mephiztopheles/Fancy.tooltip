@@ -2,7 +2,7 @@
   "name": "fancy-tooltip",
   "title": "FancyTooltip",
   "description": "JavaScript Swipe-plugin for Fancy",
-  "version": "1.0.3",
+  "version": "1.0.5",
   "main": "fancytooltip.js",
   "homepage": "http://mephiztopheles.wtf/fancy-tooltip",
   "author": "Markus Ahrweiler",
@@ -35,6 +35,6 @@
   "license": "MIT",
   "dependencies": {
     "jquery": ">=1.9.1",
-    "fancy": ">= 1.0.1"
+    "fancy": ">= 1.0.2"
   }
 }
