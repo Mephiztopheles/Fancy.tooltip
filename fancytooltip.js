@@ -7,7 +7,7 @@
 
     var i       = 1,
         NAME    = "FancyTooltip",
-        VERSION = "1.0.3",
+        VERSION = "1.0.5",
         logged  = false,
         mouse   = {
             x: 0,
@@ -75,7 +75,7 @@
                 whiteSpace: 'nowrap'
             } );
             SELF.html.tooltip.removeClass( "left" );
-            if( left + SELF.html.tooltip.width() + 60 >= window.innerWidth ) {
+            if( left + SELF.html.tooltip.outerWidth() + 60 >= window.innerWidth ) {
                 SELF.html.tooltip.addClass( "left" );
                 left -= SELF.html.tooltip.outerWidth() + SELF.settings.left * 2;
             }
