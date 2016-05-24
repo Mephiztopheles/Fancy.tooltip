@@ -21,12 +21,13 @@
     var Observer = window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver;
 
     function FancyTooltip( element, settings ) {
-        var SELF     = this;
-        SELF.id      = i;
-        SELF.name    = NAME;
-        SELF.version = VERSION;
-        SELF.element = element;
-        SELF.timer   = {};
+        var SELF      = this;
+        SELF.id       = i;
+        SELF.name     = NAME;
+        SELF.version  = VERSION;
+        SELF.element  = element;
+        SELF.hasTitle = false;
+        SELF.timer    = {};
         i++;
 
         SELF.settings = $.extend( {}, Fancy.settings [ NAME ], settings );
@@ -83,33 +84,38 @@
 
         SELF.element.addClass( SELF.name + "-element" );
         SELF.element.data( SELF.name, SELF );
-        if ( !SELF.element.data( "title" ) ) {
-            SELF.element.data( "title", SELF.element.attr( "title" ) );
+        if ( SELF.element.attr( "title" ) ) {
+            SELF.hasTitle = SELF.element.attr( "title" );
+            if ( !SELF.element.data( "title" ) ) {
+                SELF.element.data( "title", SELF.hasTitle );
+            }
+            SELF.element.removeAttr( "title" );
         }
-        SELF.element.removeAttr( "title" );
 
         if ( SELF.settings.cursor && SELF.element.css( "cursor" ) == "auto" ) {
             SELF.element.css( "cursor", SELF.settings.cursor );
         }
 
         if ( Observer ) {
-            var observer = new Observer( function ( mutation ) {
+            SELF.observer = new Observer( function ( mutation ) {
                 var mut = mutation [ 0 ];
                 if ( mut.type = "attributes" && mut.attributeName == "title" && SELF.element.attr( "title" ) ) {
                     SELF.element.data( "title", SELF.element.attr( "title" ) );
                     SELF.element.removeAttr( "title" );
                 }
             } );
-            observer.observe( SELF.element [ 0 ], {
+            SELF.observer.observe( SELF.element [ 0 ], {
                 attributes: true
             } );
         }
 
-        SELF.element [ 0 ].addEventListener( "DOMNodeRemovedFromDocument", function () {
-            SELF.hide();
-        }, false );
 
-        SELF.element.hover( function ( e ) {
+        SELF.DOMNodeRemovedFromDocument = function () {
+            SELF.hide();
+        };
+        SELF.element [ 0 ].addEventListener( "DOMNodeRemovedFromDocument", DOMNodeRemovedFromDocument, false );
+
+        SELF.element.hover( function () {
                 clearTimeout( SELF.timer[ "hide" ] );
                 SELF.timer[ "show" ] = setTimeout( function () {
                     if ( SELF.settings.query( SELF.element, SELF.settings.ever, truncated( SELF.element ) ) && !SELF.settings.disabled ) {
@@ -178,8 +184,17 @@
     FancyTooltip.api.destroy = function () {
         var SELF = this;
         SELF.hide();
-        SELF.element.removeClass( NAME + "-hover" );
+        SELF.element.removeClass( NAME + "-hover" ).removeClass( NAME + "-element" ).off( "mouseenter mouseleave" );
         $( document ).unbind( "." + NAME + "-" + SELF.id );
+        delete SELF.element.data()[ NAME ];
+        SELF.element.css( "cursor", "" );
+        SELF.element [ 0 ].removeEventListener( "DOMNodeRemovedFromDocument", DOMNodeRemovedFromDocument, false );
+        if ( SELF.observer ) {
+            SELF.observer.disconnect();
+        }
+        if ( SELF.hasTitle ) {
+            SELF.element.attr( "title", SELF.hasTitle );
+        }
     };
     FancyTooltip.api.hide    = function () {
         var SELF = this;
