@@ -113,7 +113,7 @@
         SELF.DOMNodeRemovedFromDocument = function () {
             SELF.hide();
         };
-        SELF.element [ 0 ].addEventListener( "DOMNodeRemovedFromDocument", DOMNodeRemovedFromDocument, false );
+        SELF.element [ 0 ].addEventListener( "DOMNodeRemovedFromDocument", SELF.DOMNodeRemovedFromDocument, false );
 
         SELF.element.hover( function () {
                 clearTimeout( SELF.timer[ "hide" ] );
@@ -188,7 +188,7 @@
         $( document ).unbind( "." + NAME + "-" + SELF.id );
         delete SELF.element.data()[ NAME ];
         SELF.element.css( "cursor", "" );
-        SELF.element [ 0 ].removeEventListener( "DOMNodeRemovedFromDocument", DOMNodeRemovedFromDocument, false );
+        SELF.element [ 0 ].removeEventListener( "DOMNodeRemovedFromDocument", SELF.DOMNodeRemovedFromDocument, false );
         if ( SELF.observer ) {
             SELF.observer.disconnect();
         }
