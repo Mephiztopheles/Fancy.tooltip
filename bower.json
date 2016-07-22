@@ -2,7 +2,7 @@
     "name"        : "fancy-tooltip",
     "title"       : "FancyTooltip",
     "description" : "JavaScript Swipe-plugin for Fancy",
-    "version"     : "1.0.8",
+    "version"     : "1.0.9",
     "main"        : "fancytooltip.js",
     "homepage"    : "http://mephiztopheles.wtf/fancy-tooltip",
     "author"      : "Markus Ahrweiler",
