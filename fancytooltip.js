@@ -7,7 +7,7 @@
 
     var i       = 1,
         NAME    = "FancyTooltip",
-        VERSION = "1.0.9",
+        VERSION = "1.1.0",
         logged  = false,
         mouse   = {
             x: 0,
@@ -119,7 +119,7 @@
         SELF.element.hover( function () {
                 clearTimeout( SELF.timer[ "hide" ] );
                 SELF.timer[ "show" ] = setTimeout( function () {
-                    if ( SELF.settings.query( SELF.element, SELF.settings.ever, truncated( SELF.element ) ) && !SELF.settings.disabled ) {
+                    if ( SELF.settings.query.call( SELF, SELF.element, SELF.settings.ever, truncated( SELF.element ) ) && !SELF.settings.disabled ) {
                         if ( !SELF.settings.disabled ) {
                             SELF.show();
                         }
