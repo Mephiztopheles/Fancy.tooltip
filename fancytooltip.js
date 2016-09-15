@@ -7,7 +7,7 @@
 
     var i       = 1,
         NAME    = "FancyTooltip",
-        VERSION = "1.1.0",
+        VERSION = "1.1.1",
         logged  = false,
         mouse   = {
             x: 0,
@@ -99,9 +99,13 @@
         if ( Observer ) {
             SELF.observer = new Observer( function ( mutation ) {
                 mutation.forEach( function ( mut ) {
-                    if ( mut.type = "attributes" && mut.attributeName == "title" && SELF.element.attr( "title" ) ) {
-                        SELF.element.data( "title", SELF.element.attr( "title" ) );
-                        SELF.element.removeAttr( "title" );
+                    if ( mut.type = "attributes" && mut.attributeName == "title" && SELF.element[ 0 ].hasAttribute( "title" ) ) {
+                        if ( SELF.element.attr( "title" ) ) {
+                            SELF.element.data( "title", SELF.element.attr( "title" ) );
+                            SELF.element.removeAttr( "title" );
+                        } else {
+                            SELF.element.data( "title", null );
+                        }
                     }
                 } );
             } );
