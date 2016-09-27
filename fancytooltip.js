@@ -7,7 +7,7 @@
 
     var i       = 1,
         NAME    = "FancyTooltip",
-        VERSION = "1.1.1",
+        VERSION = "1.1.2",
         logged  = false,
         mouse   = {
             x: 0,
@@ -121,33 +121,36 @@
         SELF.element [ 0 ].addEventListener( "DOMNodeRemovedFromDocument", SELF.DOMNodeRemovedFromDocument, false );
 
         SELF.element.hover( function () {
-                clearTimeout( SELF.timer[ "hide" ] );
-                SELF.timer[ "show" ] = setTimeout( function () {
-                    if ( SELF.settings.query.call( SELF, SELF.element, SELF.settings.ever, truncated( SELF.element ) ) && !SELF.settings.disabled ) {
-                        if ( !SELF.settings.disabled ) {
-                            SELF.show();
-                        }
-                        if ( SELF.settings.move ) {
-                            $( document ).on( "mousemove." + NAME + "-" + SELF.id, function () {
-                                if ( !SELF.html.tooltip.hasClass( "in" ) ) {
-                                    SELF.html.tooltip.addClass( "in" );
-                                }
-                                SELF.html.tooltip.css( SELF.getOffset() );
-                            } );
-                        }
+            do {
+                var tt = $( "#" + NAME );
+                tt.remove();
+            } while ( tt.length );
+            clearTimeout( SELF.timer[ "hide" ] );
+            SELF.timer[ "show" ] = setTimeout( function () {
+                if ( SELF.settings.query.call( SELF, SELF.element, SELF.settings.ever, truncated( SELF.element ) ) && !SELF.settings.disabled ) {
+                    if ( !SELF.settings.disabled ) {
+                        SELF.show();
                     }
-                }, SELF.settings.delay );
-            }, function () {
-                clearTimeout( SELF.timer[ "show" ] );
-                SELF.timer[ "hide" ] = setTimeout( function () {
-                    SELF.hide();
                     if ( SELF.settings.move ) {
-                        $( document ).unbind( "." + NAME + "-" + SELF.id );
+                        $( document ).on( "mousemove." + NAME + "-" + SELF.id, function () {
+                            if ( !SELF.html.tooltip.hasClass( "in" ) ) {
+                                SELF.html.tooltip.addClass( "in" );
+                            }
+                            SELF.html.tooltip.css( SELF.getOffset() );
+                        } );
                     }
-                    SELF.element.removeClass( NAME + "-hover" );
-                }, 50 );
-            }
-        );
+                }
+            }, SELF.settings.delay );
+        }, function () {
+            clearTimeout( SELF.timer[ "show" ] );
+            SELF.timer[ "hide" ] = setTimeout( function () {
+                SELF.hide();
+                if ( SELF.settings.move ) {
+                    $( document ).unbind( "." + NAME + "-" + SELF.id );
+                }
+                SELF.element.removeClass( NAME + "-hover" );
+            }, 50 );
+        } );
 
         return SELF;
     }
