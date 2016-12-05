@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title></title>
+        <script src="../bower_components/fancy/fancy.min.js"></script>
+        <script src="../fancytooltip.js"></script>
+        <link rel="stylesheet" href="../fancytooltip.css">
+        <style>
+            .FancyTooltip-element {
+                width : 100px;
+            }
+
+            #content {
+                position : relative;
+                margin   : 0 auto;
+                width    : 300px;
+            }
+        </style>
+    </head>
+    <body>
+
+        <div id="content">
+            <div id="tt">Truncated Text</div>
+            <div id="tt2">Truncated Text Truncated Text Truncated Text Truncated Text Truncated Text Truncated Text
+            </div>
+        </div>
+
+        <script>
+            Fancy( "#tt" ).tooltip();
+            Fancy( "#tt2" ).tooltip( {
+                clip: "right"
+            } );
+        </script>
+    </body>
+</html>
