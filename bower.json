@@ -1,16 +1,16 @@
 {
-    "name"         : "fancy-tooltip",
-    "title"        : "FancyTooltip",
-    "description"  : "JavaScript Swipe-plugin for Fancy",
-    "version"      : "1.0.7",
-    "main"         : "fancytooltip.js",
-    "homepage"     : "http://mephiztopheles.wtf/fancy-tooltip",
-    "author"       : "Markus Ahrweiler",
-    "repository"   : {
-        "type" : "git",
-        "url"  : "https://github.com/Mephiztopheles/Fancy.tooltip.git"
+    "name"        : "fancy-tooltip",
+    "title"       : "FancyTooltip",
+    "description" : "JavaScript Swipe-plugin for Fancy",
+    "version"     : "1.1.1",
+    "main"        : "fancytooltip.js",
+    "homepage"    : "http://mephiztopheles.wtf/fancy-tooltip",
+    "author"      : "Markus Ahrweiler",
+    "repository"  : {
+        "type": "git",
+        "url" : "https://github.com/Mephiztopheles/Fancy.tooltip.git"
     },
-    "ignore"       : [
+    "ignore"      : [
         "source",
         "spec",
         ".bowerrc",
@@ -22,19 +22,19 @@
         "package.json",
         "README.md"
     ],
-    "keywords"     : [
+    "keywords"    : [
         "fancy",
         "fancytooltip",
         "tooltip",
         "javascript",
         "browser"
     ],
-    "bugs"         : {
-        "url" : "https://github.com/Mephiztopheles/Fancy.tooltip/issues"
+    "bugs"        : {
+        "url": "https://github.com/Mephiztopheles/Fancy.tooltip/issues"
     },
-    "license"      : "MIT",
-    "dependencies" : {
-        "jquery" : ">=1.9.1",
-        "fancy"  : ">= 1.0.2"
+    "license"     : "MIT",
+    "dependencies": {
+        "jquery": ">=1.9.1",
+        "fancy" : ">= 1.0.2"
     }
 }

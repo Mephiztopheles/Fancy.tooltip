@@ -7,7 +7,7 @@
 
     var i       = 1,
         NAME    = "FancyTooltip",
-        VERSION = "1.0.7",
+        VERSION = "1.1.2",
         logged  = false,
         mouse   = {
             x: 0,
@@ -21,32 +21,27 @@
     var Observer = window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver;
 
     function FancyTooltip( element, settings ) {
-        var SELF     = this;
-        SELF.id      = i;
-        SELF.name    = NAME;
-        SELF.version = VERSION;
-        SELF.element = element;
-        SELF.timer   = {};
+        var SELF      = this;
+        SELF.id       = i;
+        SELF.name     = NAME;
+        SELF.version  = VERSION;
+        SELF.element  = element;
+        SELF.hasTitle = false;
+        SELF.timer    = {};
         i++;
 
         SELF.settings = $.extend( {}, Fancy.settings [ NAME ], settings );
         SELF.html     = {
-            tooltip: $(
-                "<div/>", {
-                    id   : NAME,
-                    class: SELF.settings.animation
-                }
-            ),
-            inner  : $(
-                "<div/>", {
-                    id: NAME + "-inner"
-                }
-            ),
-            arrow  : $(
-                "<div/>", {
-                    id: NAME + "-arrow"
-                }
-            )
+            tooltip: $( "<div/>", {
+                id   : NAME,
+                class: SELF.settings.animation
+            } ),
+            inner  : $( "<div/>", {
+                id: NAME + "-inner"
+            } ),
+            arrow  : $( "<div/>", {
+                id: NAME + "-arrow"
+            } )
         };
         SELF.html.tooltip.append( SELF.html.arrow );
         SELF.html.tooltip.append( SELF.html.inner );
@@ -89,60 +84,73 @@
 
         SELF.element.addClass( SELF.name + "-element" );
         SELF.element.data( SELF.name, SELF );
-        if ( !SELF.element.data( "title" ) ) {
-            SELF.element.data( "title", SELF.element.attr( "title" ) );
+        if ( SELF.element.attr( "title" ) ) {
+            SELF.hasTitle = SELF.element.attr( "title" );
+            if ( !SELF.element.data( "title" ) ) {
+                SELF.element.data( "title", SELF.hasTitle );
+            }
+            SELF.element.removeAttr( "title" );
         }
-        SELF.element.removeAttr( "title" );
 
         if ( SELF.settings.cursor && SELF.element.css( "cursor" ) == "auto" ) {
             SELF.element.css( "cursor", SELF.settings.cursor );
         }
 
         if ( Observer ) {
-            var observer = new Observer( function ( mutation ) {
-                var mut = mutation [ 0 ];
-                if ( mut.type = "attributes" && mut.attributeName == "title" && SELF.element.attr( "title" ) ) {
-                    SELF.element.data( "title", SELF.element.attr( "title" ) );
-                    SELF.element.removeAttr( "title" );
-                }
+            SELF.observer = new Observer( function ( mutation ) {
+                mutation.forEach( function ( mut ) {
+                    if ( mut.type = "attributes" && mut.attributeName == "title" && SELF.element[ 0 ].hasAttribute( "title" ) ) {
+                        if ( SELF.element.attr( "title" ) ) {
+                            SELF.element.data( "title", SELF.element.attr( "title" ) );
+                            SELF.element.removeAttr( "title" );
+                        } else {
+                            SELF.element.data( "title", null );
+                        }
+                    }
+                } );
             } );
-            observer.observe( SELF.element [ 0 ], {
+            SELF.observer.observe( SELF.element [ 0 ], {
                 attributes: true
             } );
         }
 
-        SELF.element [ 0 ].addEventListener( "DOMNodeRemovedFromDocument", function () {
-            SELF.hide();
-        }, false );
 
-        SELF.element.hover( function ( e ) {
-                clearTimeout( SELF.timer[ "hide" ] );
-                SELF.timer[ "show" ] = setTimeout( function () {
-                    if ( SELF.settings.query( SELF.element, SELF.settings.ever, truncated( SELF.element ) ) && !SELF.settings.disabled ) {
-                        if ( !SELF.settings.disabled ) {
-                            SELF.show();
-                        }
-                        if ( SELF.settings.move && SELF.settings.clip == "mouse" ) {
-                            $( document ).on( "mousemove." + NAME + "-" + SELF.id, function () {
-                                if ( !SELF.html.tooltip.hasClass( "in" ) ) {
-                                    SELF.html.tooltip.addClass( "in" );
-                                }
-                                SELF.html.tooltip.css( SELF.getOffset() );
-                            } );
-                        }
+        SELF.DOMNodeRemovedFromDocument = function () {
+            SELF.hide();
+        };
+        SELF.element [ 0 ].addEventListener( "DOMNodeRemovedFromDocument", SELF.DOMNodeRemovedFromDocument, false );
+
+        SELF.element.hover( function () {
+            do {
+                var tt = $( "#" + NAME );
+                tt.remove();
+            } while ( tt.length );
+            clearTimeout( SELF.timer[ "hide" ] );
+            SELF.timer[ "show" ] = setTimeout( function () {
+                if ( SELF.settings.query.call( SELF, SELF.element, SELF.settings.ever, truncated( SELF.element ) ) && !SELF.settings.disabled ) {
+                    if ( !SELF.settings.disabled ) {
+                        SELF.show();
                     }
-                }, SELF.settings.delay );
-            }, function () {
-                clearTimeout( SELF.timer[ "show" ] );
-                SELF.timer[ "hide" ] = setTimeout( function () {
-                    SELF.hide();
-                    if ( SELF.settings.move ) {
-                        $( document ).unbind( "." + NAME + "-" + SELF.id );
+                    if ( SELF.settings.move && SELF.settings.clip == "mouse" ) {
+                        $( document ).on( "mousemove." + NAME + "-" + SELF.id, function () {
+                            if ( !SELF.html.tooltip.hasClass( "in" ) ) {
+                                SELF.html.tooltip.addClass( "in" );
+                            }
+                            SELF.html.tooltip.css( SELF.getOffset() );
+                        } );
                     }
-                    SELF.element.removeClass( NAME + "-hover" );
-                }, 50 );
-            }
-        );
+                }
+            }, SELF.settings.delay );
+        }, function () {
+            clearTimeout( SELF.timer[ "show" ] );
+            SELF.timer[ "hide" ] = setTimeout( function () {
+                SELF.hide();
+                if ( SELF.settings.move ) {
+                    $( document ).unbind( "." + NAME + "-" + SELF.id );
+                }
+                SELF.element.removeClass( NAME + "-hover" );
+            }, 50 );
+        } );
 
         return SELF;
     }
@@ -171,7 +179,7 @@
         }
 
         SELF.element.addClass( NAME + "-hover" );
-        SELF.html.inner.html( SELF.element.data( "title" ) || (SELF.element[ 0 ].nodeName === "INPUT" || SELF.element[ 0 ].nodeName === "TEXTAREA" ? SELF.element.val() : SELF.element.html()) );
+        SELF.html.inner.html( SELF.settings.text || SELF.element.data( "title" ) || (SELF.element[ 0 ].nodeName === "INPUT" || SELF.element[ 0 ].nodeName === "TEXTAREA" ? SELF.element.val() : SELF.element.html()) );
         if ( SELF.settings.clip == "mouse" ) {
             $( "body" ).append( SELF.html.tooltip );
             SELF.html.tooltip.css( {
@@ -205,8 +213,17 @@
     FancyTooltip.api.destroy = function () {
         var SELF = this;
         SELF.hide();
-        SELF.element.removeClass( NAME + "-hover" );
+        SELF.element.removeClass( NAME + "-hover" ).removeClass( NAME + "-element" ).off( "mouseenter mouseleave" );
         $( document ).unbind( "." + NAME + "-" + SELF.id );
+        delete SELF.element.data()[ NAME ];
+        SELF.element.css( "cursor", "" );
+        SELF.element [ 0 ].removeEventListener( "DOMNodeRemovedFromDocument", SELF.DOMNodeRemovedFromDocument, false );
+        if ( SELF.observer ) {
+            SELF.observer.disconnect();
+        }
+        if ( SELF.hasTitle ) {
+            SELF.element.attr( "title", SELF.hasTitle );
+        }
     };
     FancyTooltip.api.hide    = function () {
         var SELF = this;
@@ -214,7 +231,7 @@
             SELF.html.tooltip.addClass( "out" );
             SELF.timer = setTimeout( function () {
                 SELF.html.tooltip.remove();
-            }, 200 );
+            }, SELF.settings.animationTimeout );
         } else {
             SELF.html.tooltip.remove();
         }
@@ -222,14 +239,16 @@
     };
 
     Fancy.settings [ NAME ] = {
-        top     : 0,
-        left    : 0,
-        ever    : true,
-        text    : false,
-        move    : true,
-        delay   : 0,
-        disabled: false,
-        query   : function () {
+        top             : 0,
+        left            : 0,
+        ever            : true,
+        text            : false,
+        move            : true,
+        delay           : 0,
+        disabled        : false,
+        animation       : false,
+        animationTimeout: 200,
+        query           : function () {
             return true;
         },
         cursor  : false,
