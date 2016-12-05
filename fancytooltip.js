@@ -251,8 +251,8 @@
         query           : function () {
             return true;
         },
-        cursor  : false,
-        clip    : "mouse"
+        cursor          : false,
+        clip            : "mouse"
     };
 
     Fancy.tooltip     = VERSION;
