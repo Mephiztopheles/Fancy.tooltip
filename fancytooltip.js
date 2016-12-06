@@ -64,20 +64,67 @@
             var left = mouse.x + SELF.settings.left,
                 top  = mouse.y + SELF.settings.top,
                 css  = {};
-
             SELF.html.tooltip.css( {
                 whiteSpace: "nowrap"
             } );
             SELF.html.tooltip.removeClass( "left" );
-            if ( left + SELF.html.tooltip.outerWidth() + 60 >= window.innerWidth ) {
+
+
+            var width = SELF.html.tooltip.outerWidth( true );
+            if ( left + width + 60 >= window.innerWidth ) {
                 SELF.html.tooltip.addClass( "left" );
-                left -= SELF.html.tooltip.outerWidth() + SELF.settings.left * 2;
+                left -= width + SELF.settings.left * 2;
+            }
+            if ( SELF.settings.clip !== "mouse" ) {
+                var relative = $( SELF.element.parents().filter( function () {
+                        return $( this ).css( "position" ) == "relative" && $( this ).css( "overflowX" ) != "hidden";
+                    } )[ 0 ] ),
+                    parent   = SELF.element.offsetParent();
+
+
+                if ( SELF.settings.clip == "left" ) {
+                    SELF.html.tooltip.addClass( "left" );
+                    left -= element.outerWidth() + SELF.settings.left + SELF.html.tooltip.outerWidth();
+                    top += Fancy( element ).fullHeight( true ) / 2 + SELF.settings.top;
+                } else if ( SELF.settings.clip == "right" ) {
+                    left += element.outerWidth() + SELF.settings.left;
+                    top += element.height() / 2 + SELF.settings.top;
+                }
+                if ( !relative.length ) {
+                    relative = $( "body" );
+                    relative.append( SELF.html.tooltip );
+                    element      = relative.is( parent ) ? SELF.element : parent;
+                    var position = element.offset();
+                    top          = position.top;
+                    left         = position.left;
+                    if ( SELF.settings.clip == "left" ) {
+                        SELF.html.tooltip.addClass( "left" );
+                        left -= element.outerWidth() + SELF.settings.left + SELF.html.tooltip.outerWidth();
+                        top += element.height() / 2 + SELF.settings.top;
+                    } else if ( SELF.settings.clip == "right" ) {
+                        left += element.outerWidth() + SELF.settings.left;
+                        top += element.height() / 2 + SELF.settings.top;
+                    }
+                } else {
+                    relative.append( SELF.html.tooltip );
+                    element    = relative.is( parent ) ? SELF.element : parent;
+                    position   = element.position();
+                    top        = position.top;
+                    left       = position.left;
+                    var scroll = Fancy.scrollParent( element );
+                    if ( scroll.length ) {
+                        top += scroll[ 0 ].scrollTop;
+                    }
+
+                }
             }
             SELF.html.tooltip.css( {
                 whiteSpace: ""
             } );
-            css.top  = top;
-            css.left = left;
+            css.top      = top;
+            css.left     = left;
+            css.parent   = parent;
+            css.position = "fixed";
 
             return css;
         };
@@ -180,34 +227,15 @@
 
         SELF.element.addClass( NAME + "-hover" );
         SELF.html.inner.html( SELF.settings.text || SELF.element.data( "title" ) || (SELF.element[ 0 ].nodeName === "INPUT" || SELF.element[ 0 ].nodeName === "TEXTAREA" ? SELF.element.val() : SELF.element.html()) );
-        if ( SELF.settings.clip == "mouse" ) {
-            $( "body" ).append( SELF.html.tooltip );
-            SELF.html.tooltip.css( {
-                position: "fixed",
-                top     : SELF.getOffset().top,
-                left    : SELF.getOffset().left,
-                maxWidth: window.innerWidth / 3
-            } );
-        } else {
-            SELF.element.parent().append( SELF.html.tooltip );
-            var position = SELF.element.position(),
-                top      = position.top,
-                left     = position.left;
-            if ( SELF.settings.clip == "left" ) {
-                SELF.html.tooltip.addClass( "left" );
-                left -= SELF.element.outerWidth() + SELF.settings.left + SELF.html.tooltip.outerWidth();
-                top += SELF.element.height() / 2 + SELF.settings.top;
-            } else if ( SELF.settings.clip == "right" ) {
-                left += SELF.element.outerWidth() + SELF.settings.left;
-                top += SELF.element.height() / 2 + SELF.settings.top;
-            }
-            SELF.html.tooltip.css( {
-                position: "absolute",
-                top     : top,
-                left    : left,
-                maxWidth: window.innerWidth / 3
-            } );
-        }
+
+
+        var offset = SELF.getOffset();
+        SELF.html.tooltip.css( {
+            position: offset.position,
+            top     : offset.top,
+            left    : offset.left,
+            maxWidth: window.innerWidth / 3
+        } );
         return this;
     };
     FancyTooltip.api.destroy = function () {
@@ -252,7 +280,7 @@
             return true;
         },
         cursor          : false,
-        clip            : "mouse"
+        clip            : "right"
     };
 
     Fancy.tooltip     = VERSION;
